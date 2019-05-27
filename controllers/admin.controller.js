@@ -37,7 +37,7 @@ exports.register = (req, res) =>{
     function saveToLoginInfo(request, user) {
         var adminlogininfo = new loginModel(
             {
-                userName: user.userName,
+                username: user.userName,
                 password: user.password,
                 role:  user.role,
                 sysCreatedDate: new Date(),

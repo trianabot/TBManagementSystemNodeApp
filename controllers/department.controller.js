@@ -1,4 +1,6 @@
 const departmentModel = require('../models/department.model');
+const AdminModel = require('../models/adminregister.model');
+const loginModel = require('../models/logininfo.model');
 const uuid = require('uuid4');
 
 //List of department
@@ -15,11 +17,8 @@ exports.department = (req, res) =>{
 //add new designation
 exports.adddepartment = (req, res) => {
     departmentModel.findOne({ departmentName: req.body.departmentName }, (err, user) => {
-
         if (user) return res.status(400).send({ message: 'The Designation you have entered is already associated with another account.' });
-        
         var deptid = uuid();
-
         try {
                 var date = new Date().getTime();
                 var createDate = (Math.round(date/1000));
@@ -29,12 +28,19 @@ exports.adddepartment = (req, res) => {
                     contactPerson : req.body.contactPerson,
                     phone : req.body.phone,
                     email : req.body.email,
-                    createDate : createDate
+                    createDate : createDate,
+                    username : req.body.username,
+                    password : req.body.password,
+                    departmentStatus : true,
+                    role: req.body.role
                 });
-
+                //console.log(department);
                 department.save((err,data) =>{
                     if(!err){   
-                        res.status(200).send({msg:'Success',data:data});
+                        
+                        //res.status(200).send({msg:'Success',data:data});
+                        saveToLoginInfo(req, data);
+
                     }
                     else{
                         console.log(err);
@@ -43,6 +49,31 @@ exports.adddepartment = (req, res) => {
             } catch (e) {
                 res.status(500).send(e);
             }
+
+            function saveToLoginInfo(request, user) {
+                var logininfo = new loginModel(
+                    {
+                        username: user.username,
+                        password: user.password,
+                        role:  user.role,
+                        sysCreatedDate: new Date(),
+                        sysUpdatedDate: new Date()
+                    }
+                );
+        
+                logininfo.save((err, userinfodata) => {
+                    if (!err) {
+                        // Create a confirmation email token for this user
+                    res.send({message: 'Success'});
+                    } else if (userinfodata == "" || userinfodata == []) {
+                        res.send({ message: "User not registered please check the data" });
+                    } else {
+                        return next(err);
+                        // res.send({message:err});
+                    }
+                });
+            }
+
         });
 }
 

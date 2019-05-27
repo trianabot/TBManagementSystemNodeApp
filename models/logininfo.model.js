@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let LoginInfoModel = new Schema({
-    userName:{
+    username:{
         type: String
     },
     role:{

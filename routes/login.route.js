@@ -4,10 +4,10 @@ const loginModel = require('../models/logininfo.model');
 
 //Login route
 router.post('/login', (req, res)=>{
-    var userName = req.body.userName;
+    var username = req.body.username;
     var password = req.body.password;
 
-    loginModel.findOne({userName: userName, password:password}, function(err, user) {
+    loginModel.findOne({username: username, password:password}, function(err, user) {
         if(err) {
             return res.status(500).send();
         }

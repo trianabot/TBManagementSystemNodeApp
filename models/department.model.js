@@ -24,6 +24,20 @@ let departmentModel = new Schema({
     },
     createDate :{
         type: String
+    },
+    username :{
+        type: String
+    },
+    password : {
+        type: String
+    },
+    departmentStatus :{
+        type:Boolean,
+        default:true
+    },
+    role :{
+        type: String,
+        required: true
     }
 });
 
