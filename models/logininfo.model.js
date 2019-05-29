@@ -32,6 +32,10 @@ let LoginInfoModel = new Schema({
     sysUpdatedDate: {
         type: String,
         required: false
+    }, 
+    loginStatus: {
+        type:Boolean,
+        default:true
     }
 });
 

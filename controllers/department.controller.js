@@ -56,6 +56,7 @@ exports.adddepartment = (req, res) => {
                         username: user.username,
                         password: user.password,
                         role:  user.role,
+                        loginStatus:true,
                         sysCreatedDate: new Date(),
                         sysUpdatedDate: new Date()
                     }
@@ -77,8 +78,28 @@ exports.adddepartment = (req, res) => {
         });
 }
 
-//edit and update designation 
+//get the record of particular department 
+exports.findDepartment = (req, res) =>{
+    departmentModel.find({deptId : req.body.deptId})
+    .then(department => {
+        if(!department) {
+            return res.status(404).send({
+                message: "Note not found with id " + req.body.deptId
+            });            
+        }
+        res.send(department);
+    }).catch(err => {
+        if(err) {
+            return res.status(404).send({
+                message: "Note not found with id " + req.body.deptId
+            });                
+        }
+      
+    }); 
+};
 
+
+//edit and update designation 
 exports.updatedepartment = (req, res) => {
     if (!req.body.departmentName) {
       return res.status(400).send({
@@ -87,7 +108,12 @@ exports.updatedepartment = (req, res) => {
     }
     // Find note and update it with the request body
     departmentModel.findOneAndUpdate({ deptId: req.body.deptId }, {
-      $set: { departmentName: req.body.departmentName }
+      $set: { 
+            departmentName: req.body.departmentName,
+            contactPerson : req.body.contactPerson,
+            phone : req.body.phone,
+            email: req.body.email
+         }
     }, { new: true })
       .then(data => {
         if (!data) {
@@ -113,22 +139,55 @@ exports.updatedepartment = (req, res) => {
 
   // Delete a note with the specified noteId in the request
 exports.deletedepartment = (req, res) => {
-    departmentModel.remove({ deptId: req.body.deptId })
-    .then(data => {
-        if(!data) {
+    departmentModel.findOneAndUpdate({ deptId: req.body.deptId }, {
+        $set: {
+            departmentStatus: false
+           }
+      }, { new: true })
+        .then(data => {
+          if (!data) {
             return res.status(404).send({
-                message: "Department not found with id " + req.body.deptId
+              message: "Department name not found with id " + req.body.DeptId
             });
-        }
-        res.send({message: "Department deleted successfully!"});
-    }).catch(err => {
-        if(err.kind === 'ObjectId' || err.name === 'NotFound') {
-            return res.status(404).send({
-                message: "Department not found with id " + req.body.deptId
-            });                
-        }
-        return res.status(500).send({
-            message: "Could not delete Department with id " + req.body.deptId
-        });
-    });
+          }
+          if(data){
+            loginModel.findOneAndUpdate({ username: data.username }, {
+                $set: {
+                    loginStatus: false
+                   }
+              }, { new: true })
+                .then(data => {
+                  if (!data) {
+                    console.log("Status is false");
+                  }else {
+                    //console.log("Updated in login table");
+                    res.status(200).send({msg:"updated", data : data});
+                  }
+                //   res.status(200).send({
+                //     msg: "Updated",
+                //     data: data
+                //   });
+                }).catch(err => {
+                  if (err) {
+                    return res.status(500).send({
+                        message: "Error updating Department name with id " + req.body.deptId
+                      });
+                  }
+            });  
+
+
+
+
+          }
+        //   res.status(200).send({
+        //     msg: "Updated",
+        //     data: data
+        //   });
+        }).catch(err => {
+          if (err) {
+            return res.status(500).send({
+                message: "Error updating Department name with id " + req.body.deptId
+              });
+          }
+    });  
 };

@@ -15,8 +15,9 @@ router.delete('/deleteDesignation', hrController.deleteDesignation);
 //department
 router.get('/department', deptController.department);
 router.post('/adddepartment', deptController.adddepartment);
+router.post('/getdepartment', deptController.findDepartment);
 router.post('/updatedepartment', deptController.updatedepartment);
-router.delete('/deletedepartment', deptController.deletedepartment);
+router.post('/deletedepartment', deptController.deletedepartment);
 
 //Shift timing 
 router.get('/shifttime', shiftController.shifts);
